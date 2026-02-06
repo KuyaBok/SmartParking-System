@@ -2,19 +2,49 @@
 session_start();
 require 'db.php';
 
-$result = $conn->query("SELECT * FROM vehicles ORDER BY created_at DESC");
+// Search and filter parameters
+$search = trim($_GET['q'] ?? '');
+$typeFilter = $_GET['type'] ?? 'all'; // 'all', 'student', 'guest'
+
+// Vehicles (students) - only query when type is not 'guest'
+if ($typeFilter === 'guest') {
+    $result = false;
+} else {
+    $vSql = "SELECT * FROM vehicles";
+    $vWhere = array();
+    if ($search !== '') {
+        $vWhere[] = "owner_name LIKE '%" . $conn->real_escape_string($search) . "%'";
+    }
+    if (!empty($vWhere)) {
+        $vSql .= ' WHERE ' . implode(' AND ', $vWhere);
+    }
+    $vSql .= " ORDER BY created_at DESC";
+    $result = $conn->query($vSql);
+}
 
 // Check if 'guests' table exists before querying to avoid fatal errors
 $tbl = $conn->query("SHOW TABLES LIKE 'guests'");
 if ($tbl && $tbl->num_rows > 0) {
-    $guests_result = $conn->query("SELECT * FROM guests ORDER BY created_at DESC");
+    if ($typeFilter === 'student') {
+        $guests_result = false;
+    } else {
+        $gSql = "SELECT * FROM guests";
+        $gWhere = array();
+        if ($search !== '') {
+            $gWhere[] = "owner_name LIKE '%" . $conn->real_escape_string($search) . "%'";
+        }
+        if (!empty($gWhere)) {
+            $gSql .= ' WHERE ' . implode(' AND ', $gWhere);
+        }
+        $gSql .= " ORDER BY created_at DESC";
+        $guests_result = $conn->query($gSql);
+    }
 } else {
     $guests_result = false; // table missing, treat as no guests
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Registered Vehicles</title>
@@ -31,6 +61,20 @@ if ($tbl && $tbl->num_rows > 0) {
             <svg viewBox="0 0 24 24"><path d="M15.5 19l-7-7 7-7"/></svg>
             Back
         </a>
+
+        <!-- Search & Filter Bar -->
+        <div class="search-bar-container">
+            <form method="GET" action="view_vehicles.php" class="search-bar-form">
+                <input type="text" name="q" placeholder="Search owner name..." value="<?= htmlspecialchars($search) ?>" class="search-bar-input">
+                <select name="type" class="search-bar-select">
+                    <option value="all" <?= $typeFilter === 'all' ? 'selected' : '' ?>>All</option>
+                    <option value="student" <?= $typeFilter === 'student' ? 'selected' : '' ?>>Student</option>
+                    <option value="guest" <?= $typeFilter === 'guest' ? 'selected' : '' ?>>Guest</option>
+                </select>
+                <button type="submit" class="search-bar-btn">Search</button>
+                <a href="view_vehicles.php" class="search-bar-btn reset-btn">Reset</a>
+            </form>
+        </div>
 
         <div class="table-wrapper">
             
@@ -114,14 +158,8 @@ if ($tbl && $tbl->num_rows > 0) {
                             <td class="actions">
                                 <?php if (empty($guest['qr_image'])): ?>
                                     <a href="generate_qr.php?guest_id=<?= $guest['id']; ?>" class="btn qr-btn">Generate QR</a>
-                                    <?php if (!empty($guest['owner_email'])): ?>
-                                        <a href="generate_qr.php?guest_id=<?= $guest['id']; ?>" class="btn success-btn">Generate &amp; Send</a>
-                                    <?php endif; ?>
                                 <?php else: ?>
                                     <a href="<?= htmlspecialchars($guest['qr_image']); ?>" target="_blank" class="btn edit-btn">View QR</a>
-                                    <?php if (!empty($guest['owner_email'])): ?>
-                                        <a href="generate_qr.php?guest_id=<?= $guest['id']; ?>" class="btn success-btn">Resend via Email</a>
-                                    <?php endif; ?>
                                 <?php endif; ?>
                                 <a href="delete_vehicle.php?guest_id=<?= $guest['id']; ?>" class="btn delete-btn" onclick="return confirm('Are you sure you want to delete this guest vehicle?');">Remove</a>
                             </td>

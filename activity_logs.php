@@ -134,7 +134,7 @@ $guestResult = $conn->query($guestSql);
         </div>
 
         <div class="table-container mt-32">
-            <h2 class="table-title section-title">Guest Parking Logs</h2>
+            <h2 class="table-title">Guest Parking Logs</h2>
             <table class="activity-table">
                 <thead>
                     <tr>
