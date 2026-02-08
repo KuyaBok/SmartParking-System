@@ -46,6 +46,7 @@ if (isset($_SESSION['error'])) {
             <input type="text" name="plate_number" placeholder="Plate Number" required>
             <input type="text" name="owner_name" placeholder="Owner Name" required>
             <input type="text" name="contact_number" placeholder="Contact Number" required>
+            <input type="text" name="vehicle_description" placeholder="Vehicle Description (e.g., Toyota Wigo, Yamaha YZF)" required>
             <label for="vehicle_type">Type:</label>
             <select name="vehicle_type" id="vehicle_type" required>
                 <option value="">-- Select Vehicle Type --</option>

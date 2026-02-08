@@ -33,6 +33,7 @@ CREATE TABLE `guests` (
   `owner_name` varchar(255) NOT NULL,
   `contact_number` varchar(50) DEFAULT NULL,
   `vehicle_type` varchar(50) DEFAULT NULL,
+  `vehicle_description` varchar(255) DEFAULT NULL,
   `qr_token` varchar(255) DEFAULT NULL,
   `qr_image` varchar(255) DEFAULT NULL,
   `owner_email` varchar(255) DEFAULT NULL,
@@ -100,6 +101,7 @@ CREATE TABLE `vehicles` (
   `owner_id` int(11) NOT NULL,
   `contact_number` varchar(20) NOT NULL,
   `vehicle_type` varchar(20) NOT NULL,
+  `vehicle_description` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `owner_email` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -9,12 +9,19 @@ if (isset($_POST['register_vehicle'])) {
     $owner_id = trim($_POST['owner_id']);
     $contact_number = trim($_POST['contact_number']);
     $owner_email = trim($_POST['owner_email']);
+    $vehicle_description = trim($_POST['vehicle_description']);
     $vehicle_type = trim($_POST['vehicle_type']);
 
     // Ensure 'owner_email' column exists
     $colCheck = $conn->query("SHOW COLUMNS FROM vehicles LIKE 'owner_email'");
     if (!$colCheck || $colCheck->num_rows === 0) {
         $conn->query("ALTER TABLE vehicles ADD COLUMN owner_email VARCHAR(255) DEFAULT NULL");
+    }
+
+    // Ensure 'vehicle_description' column exists
+    $colCheckDesc = $conn->query("SHOW COLUMNS FROM vehicles LIKE 'vehicle_description'");
+    if (!$colCheckDesc || $colCheckDesc->num_rows === 0) {
+        $conn->query("ALTER TABLE vehicles ADD COLUMN vehicle_description VARCHAR(255) DEFAULT NULL");
     }
 
     if (!filter_var($owner_email, FILTER_VALIDATE_EMAIL)) {
@@ -50,16 +57,17 @@ if (isset($_POST['register_vehicle'])) {
 
     $insertStmt = $conn->prepare("
         INSERT INTO vehicles 
-        (vehicle_number, owner_name, owner_id, contact_number, owner_email, vehicle_type)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (vehicle_number, owner_name, owner_id, contact_number, owner_email, vehicle_description, vehicle_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
     $insertStmt->bind_param(
-        "ssssss",
+        "sssssss",
         $vehicle_number,
         $owner_name,
         $owner_id,
         $contact_number,
         $owner_email,
+        $vehicle_description,
         $vehicle_type
     );
 

@@ -53,7 +53,7 @@ if (isset($_SESSION['error'])) {
             <input type="text" name="contact_number" placeholder="Contact Number" required>
 
             <input type="email" name="owner_email" placeholder="Student Email" required>
-
+            <input type="text" name="vehicle_description" placeholder="Vehicle Description (e.g., Toyota Vios, Honda Civic)" required>
             <label for="vehicle_type">Type:</label>
             <select name="vehicle_type" id="vehicle_type" required>
                 <option value="">-- Select Vehicle Type --</option>

@@ -88,6 +88,7 @@ if ($tbl && $tbl->num_rows > 0) {
                         <th>Owner ID</th>
                         <th>Contact</th>
                         <th>Type</th>
+                        <th>Description</th>
                         <th>Date Registered</th>
                         <th>Actions</th>
                     </tr>
@@ -103,6 +104,7 @@ if ($tbl && $tbl->num_rows > 0) {
                             <td><?= htmlspecialchars($row['owner_id']); ?></td>
                             <td><?= htmlspecialchars($row['contact_number']); ?></td>
                             <td><?= htmlspecialchars($row['vehicle_type']); ?></td>
+                            <td><?= htmlspecialchars($row['vehicle_description'] ?? 'N/A'); ?></td>
                             <td><?= htmlspecialchars($row['created_at']); ?></td>
                             <td class="actions">
                                 <a href="edit_vehicle.php?id=<?= $row['id']; ?>" class="btn edit-btn"> Edit</a>
@@ -123,7 +125,7 @@ if ($tbl && $tbl->num_rows > 0) {
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="8">No vehicles registered.</td>
+                        <td colspan="9">No vehicles registered.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>
@@ -140,6 +142,7 @@ if ($tbl && $tbl->num_rows > 0) {
                         <th>Owner Name</th>
                         <th>Contact</th>
                         <th>Type</th>
+                        <th>Description</th>
                         <th>Date Registered</th>
                         <th>Actions</th>
                     </tr>
@@ -154,6 +157,7 @@ if ($tbl && $tbl->num_rows > 0) {
                             <td><?= htmlspecialchars($guest['owner_name']); ?></td>
                             <td><?= htmlspecialchars($guest['contact_number']); ?></td>
                             <td><?= htmlspecialchars($guest['vehicle_type']); ?></td>
+                            <td><?= htmlspecialchars($guest['vehicle_description'] ?? 'N/A'); ?></td>
                             <td><?= htmlspecialchars($guest['created_at']); ?></td>
                             <td class="actions">
                                 <?php if (empty($guest['qr_image'])): ?>
@@ -167,7 +171,7 @@ if ($tbl && $tbl->num_rows > 0) {
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="7">No guest vehicles registered.</td>
+                        <td colspan="8">No guest vehicles registered.</td>
                     </tr>
                 <?php endif; ?>
                 </tbody>

@@ -6,6 +6,7 @@ if (isset($_POST['register_vehicle'])) {
     $plate_number = trim($_POST['plate_number']);
     $owner_name = trim($_POST['owner_name']);
     $contact_number = trim($_POST['contact_number']);
+    $vehicle_description = trim($_POST['vehicle_description']);
     $vehicle_type = trim($_POST['vehicle_type']);
 
 
@@ -50,16 +51,23 @@ if (isset($_POST['register_vehicle'])) {
 
     // Note: we no longer block solely on owner_name or vehicle_type matches as they can be common.
 
+    // Ensure 'vehicle_description' column exists in guests table
+    $colCheckDesc = $conn->query("SHOW COLUMNS FROM guests LIKE 'vehicle_description'");
+    if (!$colCheckDesc || $colCheckDesc->num_rows === 0) {
+        $conn->query("ALTER TABLE guests ADD COLUMN vehicle_description VARCHAR(255) DEFAULT NULL");
+    }
+
     $insertStmt = $conn->prepare("
         INSERT INTO guests 
-        (plate_number, owner_name, contact_number, vehicle_type)
-        VALUES (?, ?, ?, ?)
+        (plate_number, owner_name, contact_number, vehicle_description, vehicle_type)
+        VALUES (?, ?, ?, ?, ?)
     ");
     $insertStmt->bind_param(
-        "ssss",
+        "sssss",
         $plate_number,
         $owner_name,
         $contact_number,
+        $vehicle_description,
         $vehicle_type
     );
 
