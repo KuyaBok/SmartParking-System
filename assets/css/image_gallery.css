@@ -1,0 +1,64 @@
+/* Small inline thumbnail list (used elsewhere) */
+.thumbs-inline{display:flex;align-items:center;gap:6px}
+.thumb-wrapper{display:inline-block;position:relative}
+.thumb-wrapper img,.vehicle-thumb{width:80px;height:auto;border-radius:6px;display:block;object-fit:cover;border:1px solid #e6e6e6}
+.img-count-badge{background:#ff6b6b;color:#fff;font-size:11px;padding:2px 6px;border-radius:12px;margin-left:6px}
+
+/* Gallery grid */
+.gallery-wrap{
+	display:grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap:18px;
+	align-items:start;
+}
+.gallery-item{
+	background:#fff;
+	border-radius:10px;
+	overflow:hidden;
+	box-shadow:0 6px 18px rgba(17,24,39,0.06);
+	transition:transform .18s, box-shadow .18s;
+	display:flex;
+	flex-direction:column;
+}
+.gallery-item:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(17,24,39,0.12)}
+.gallery-item .thumb-wrapper{display:block;flex:1}
+.gallery-item img{width:100%;height:220px;object-fit:cover;display:block}
+.gallery-caption{padding:12px 14px;border-top:1px solid #f1f5f9;background:#fff;font-size:13px;color:#556;display:flex;justify-content:space-between;align-items:center}
+.gallery-meta{font-size:12px;color:#7b8794}
+
+/* small back button variant for the gallery */
+.gallery-back-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;text-decoration:none;color:#0d6efd;background:rgba(13,110,253,0.06);border:1px solid rgba(13,110,253,0.08);font-weight:600}
+.gallery-back-btn:hover{background:rgba(13,110,253,0.10)}
+
+/* Lightbox */
+.lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s}
+.lightbox-overlay.open{opacity:1;pointer-events:auto}
+.lightbox-inner{position:relative;max-width:95%;max-height:95%}
+.lightbox-img{max-width:100%;max-height:100%;border-radius:6px;display:block}
+.lightbox-close{position:absolute;top:-12px;right:-12px;background:#fff;border-radius:50%;width:36px;height:36px;border:none;font-size:20px;line-height:1;cursor:pointer}
+
+/* drop area / previews preserved for other pages */
+.image-drop-area{border:2px dashed #e6e6e6;padding:12px;border-radius:8px;display:flex;align-items:center;gap:12px}
+.image-drop-area.drag-over{background:#f8fbff;border-color:#8ab4ff}
+.image-drop-area .drop-hint{color:#666;font-size:13px}
+.toast{font-weight:500}
+
+/* Preview item and remove button */
+.preview-item{position:relative;display:inline-block;margin-right:8px}
+.preview-item img{border-radius:6px;display:block;max-width:160px}
+.preview-remove{position:absolute;top:6px;right:6px;background:#fff;border:1px solid #eee;padding:2px 6px;border-radius:6px;color:#c00;cursor:pointer}
+
+/* empty state */
+.gallery-empty{padding:28px;background:#fff;border-radius:10px;text-align:center;color:#667;box-shadow:0 6px 18px rgba(17,24,39,0.04)}
+
+/* Gallery sections */
+.gallery-section{margin-bottom:22px}
+.section-title{font-size:1.05rem;color:#233449;margin-bottom:12px;font-weight:700}
+.gallery-box{background:#f8fbff;padding:12px;border-radius:10px;border:1px solid rgba(13,110,253,0.06)}
+
+/* Gallery-specific top action buttons (Back / Dashboard) — don't override global .top-actions */
+.gallery-top-actions{position:relative;display:flex;gap:8px;align-items:center;z-index:11;margin-bottom:12px}
+.gallery-top-actions .back-btn,.gallery-top-actions .dashboard-link{display:flex;align-items:center;padding:7px 12px;background:#0d6efd;color:#fff;border:none;border-radius:6px;font-size:0.98rem;font-weight:500;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:background 0.2s}
+.gallery-top-actions .back-btn:hover,.gallery-top-actions .dashboard-link:hover{background:#084298}
+.gallery-top-actions .back-btn svg,.gallery-top-actions .dashboard-link svg{margin-right:6px;width:18px;height:18px;fill:#fff}
+

@@ -14,6 +14,15 @@ $totalResult = $conn->query($totalSql);
 if ($totalResult && $row = $totalResult->fetch_assoc()) {
     $totalRegistered = $row['total'];
 }
+// Total registered guests (if guests table exists)
+$totalGuests = 0;
+$tbl = $conn->query("SHOW TABLES LIKE 'guests'");
+if ($tbl && $tbl->num_rows > 0) {
+    $gCountRes = $conn->query("SELECT COUNT(*) AS total FROM guests");
+    if ($gCountRes && $gr = $gCountRes->fetch_assoc()) {
+        $totalGuests = $gr['total'];
+    }
+}
 $vehicleSql = "
     SELECT owner_name, action, scanned_at
     FROM parking_logs
@@ -207,6 +216,10 @@ if ($currentHour >= 21 || $currentHour < 6) {
             <div class="card">
                 <h3>Total Registered Vehicles</h3>
                 <p><?= number_format($totalRegistered) ?></p>
+            </div>
+            <div class="card">
+                <h3>Total Registered Guests</h3>
+                <p><?= number_format($totalGuests) ?></p>
             </div>
             <div class="full-width-card">
                 <h3>Recent Parking Activity</h3>

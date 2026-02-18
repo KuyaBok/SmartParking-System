@@ -113,6 +113,22 @@ CREATE TABLE `vehicles` (
 INSERT INTO `vehicles` (`id`, `vehicle_number`, `qr_token`, `qr_image`, `owner_name`, `owner_id`, `contact_number`, `vehicle_type`, `created_at`, `owner_email`) VALUES
 (19, 'abc123', '4c90633849776216', 'qrcodes/joseph_eric_balahadia_19.png', 'Joseph Eric Balahadia', 2000243366, '09688542128', 'car', '2026-02-04 10:17:52', 'balahadiajosepheric@gmail.com');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vehicle_images`
+--
+
+CREATE TABLE IF NOT EXISTS `vehicle_images` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `vehicle_id` int(11) NOT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `vehicle_id_idx` (`vehicle_id`),
+  CONSTRAINT `vehicle_images_vehicle_fk` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Indexes for dumped tables
 --

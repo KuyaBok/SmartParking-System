@@ -51,6 +51,7 @@ if ($tbl && $tbl->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="assets/js/reload_on_nav.js"></script>
     <link rel="stylesheet" href="assets/css/view_vehicles.css">
+    <link rel="stylesheet" href="assets/css/image_gallery.css">
 </head>
 <body>
 
@@ -65,7 +66,8 @@ if ($tbl && $tbl->num_rows > 0) {
         <!-- Search & Filter Bar -->
         <div class="search-bar-container">
             <form method="GET" action="view_vehicles.php" class="search-bar-form">
-                <input type="text" name="q" placeholder="Search owner name..." value="<?= htmlspecialchars($search) ?>" class="search-bar-input">
+                <input id="owner-search" type="text" name="q" placeholder="Search owner name..." value="<?= htmlspecialchars($search) ?>" class="search-bar-input" list="owner-suggestions" autocomplete="off">
+                <datalist id="owner-suggestions"></datalist>
                 <select name="type" class="search-bar-select">
                     <option value="all" <?= $typeFilter === 'all' ? 'selected' : '' ?>>All</option>
                     <option value="student" <?= $typeFilter === 'student' ? 'selected' : '' ?>>Student</option>
@@ -99,6 +101,7 @@ if ($tbl && $tbl->num_rows > 0) {
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?= $count++; ?></td>
+                            <!-- image column removed (gallery button used instead) -->
                             <td><?= htmlspecialchars($row['vehicle_number']); ?></td>
                             <td><?= htmlspecialchars($row['owner_name']); ?></td>
                             <td><?= htmlspecialchars($row['owner_id']); ?></td>
@@ -108,6 +111,7 @@ if ($tbl && $tbl->num_rows > 0) {
                             <td><?= htmlspecialchars($row['created_at']); ?></td>
                             <td class="actions">
                                 <a href="edit_vehicle.php?id=<?= $row['id']; ?>" class="btn edit-btn"> Edit</a>
+                                <a href="vehicle_gallery.php?id=<?= $row['id']; ?>" class="btn gallery-btn">View Images</a>
                                 <?php if (empty($row['qr_image'])): ?>
                                     <a href="generate_qr.php?id=<?= $row['id']; ?>" class="btn qr-btn">Generate QR</a>
                                     <?php if (!empty($row['owner_email'])): ?>
@@ -179,6 +183,9 @@ if ($tbl && $tbl->num_rows > 0) {
         </div>
     </div>
 </div>
+
+<script src="assets/js/owner_suggest.js"></script>
+<script src="assets/js/image_lightbox.js"></script>
 
 </body>
 </html>

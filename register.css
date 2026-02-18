@@ -103,3 +103,10 @@ button:hover {
 }
 .back-btn:hover { background: #084298; color: #fff; }
 .back-btn svg { margin-right: 6px; width: 18px; height: 18px; fill: #fff; }
+
+/* Dashboard link variant positioned on the right */
+.dashboard-link { left: auto; right: auto; }
+
+/* Top actions container to keep buttons tightly sized */
+.top-actions{position:absolute;top:18px;left:18px;display:flex;gap:8px;align-items:center;z-index:11}
+.top-actions .back-btn,.top-actions .dashboard-link{position:relative;left:auto;right:auto}
