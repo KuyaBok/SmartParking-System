@@ -24,10 +24,11 @@ if ($tbl && $tbl->num_rows > 0) {
     }
 }
 $vehicleSql = "
-    SELECT owner_name, action, scanned_at
-    FROM parking_logs
-    WHERE COALESCE(vehicle_id, 0) > 0
-    ORDER BY scanned_at DESC
+    SELECT pl.owner_name, pl.action, pl.scanned_at, v.contact_number, v.vehicle_description
+    FROM parking_logs pl
+    LEFT JOIN vehicles v ON pl.vehicle_id = v.id
+    WHERE COALESCE(pl.vehicle_id, 0) > 0
+    ORDER BY pl.scanned_at DESC
     LIMIT 10
 ";
 $vehicleResult = $conn->query($vehicleSql);
@@ -38,10 +39,11 @@ if ($vehicleResult) {
     }
 }
 $guestSql = "
-    SELECT owner_name, action, scanned_at
-    FROM parking_logs
-    WHERE COALESCE(vehicle_id, 0) = 0
-    ORDER BY scanned_at DESC
+    SELECT pl.owner_name, pl.action, pl.scanned_at, g.contact_number, g.vehicle_description
+    FROM parking_logs pl
+    LEFT JOIN guests g ON pl.owner_name COLLATE utf8mb4_general_ci = g.owner_name COLLATE utf8mb4_general_ci
+    WHERE COALESCE(pl.vehicle_id, 0) = 0
+    ORDER BY pl.scanned_at DESC
     LIMIT 10
 ";
 $guestResult = $conn->query($guestSql);
@@ -156,6 +158,7 @@ if ($currentHour >= 21 || $currentHour < 6) {
             <a href="register_choice.php">Register</a>
             <a href="view_vehicles.php">Registered</a>
             <a href="activity_logs.php">Activity Logs</a>
+            <a href="guard_scan.php">Guard Scan</a>
             <a href="logout.php">Logout</a>
         </nav>
     </aside>
@@ -229,7 +232,10 @@ if ($currentHour >= 21 || $currentHour < 6) {
                     <table class="activity-table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Owner</th>
+                                <th>Contact</th>
+                                <th>Description</th>
                                 <th>Status</th>
                                 <th>Date & Time</th>
                             </tr>
@@ -237,12 +243,16 @@ if ($currentHour >= 21 || $currentHour < 6) {
                         <tbody>
                             <?php if (empty($vehicleActivities)): ?>
                                 <tr>
-                                    <td colspan="3">No recent activity</td>
+                                    <td colspan="6">No recent activity</td>
                                 </tr>
                             <?php else: ?>
+                                <?php $vcount = 1; ?>
                                 <?php foreach ($vehicleActivities as $log): ?>
                                     <tr>
+                                        <td><?= $vcount++ ?></td>
                                         <td><?= htmlspecialchars($log['owner_name']) ?></td>
+                                        <td><?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($log['vehicle_description'] ?? 'N/A') ?></td>
                                         <td class="<?= $log['action'] === 'IN' ? 'in' : 'out' ?>">
                                             <?= $log['action'] ?>
                                         </td>
@@ -259,7 +269,10 @@ if ($currentHour >= 21 || $currentHour < 6) {
                     <table class="activity-table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Owner</th>
+                                <th>Contact</th>
+                                <th>Description</th>
                                 <th>Status</th>
                                 <th>Date & Time</th>
                             </tr>
@@ -267,12 +280,16 @@ if ($currentHour >= 21 || $currentHour < 6) {
                         <tbody>
                             <?php if (empty($guestActivities)): ?>
                                 <tr>
-                                    <td colspan="3">No recent activity</td>
+                                    <td colspan="6">No recent activity</td>
                                 </tr>
                             <?php else: ?>
+                                <?php $gcount = 1; ?>
                                 <?php foreach ($guestActivities as $log): ?>
                                     <tr>
+                                        <td><?= $gcount++ ?></td>
                                         <td><?= htmlspecialchars($log['owner_name']) ?></td>
+                                        <td><?= htmlspecialchars($log['contact_number'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($log['vehicle_description'] ?? 'N/A') ?></td>
                                         <td class="<?= $log['action'] === 'IN' ? 'in' : 'out' ?>">
                                             <?= $log['action'] ?>
                                         </td>

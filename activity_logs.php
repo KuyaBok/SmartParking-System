@@ -27,19 +27,21 @@ $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
 // Fetch logs for vehicles (students/employees) — treat vehicle_id > 0 as vehicle logs
 $vehicleSql = "
-    SELECT owner_name, action, scanned_at
-    FROM parking_logs
-    WHERE COALESCE(vehicle_id, 0) > 0 ". ($where ? ' AND '.implode(' AND ', $where) : '') ."
-    ORDER BY scanned_at DESC
+    SELECT pl.owner_name, pl.action, pl.scanned_at, v.contact_number, v.vehicle_description
+    FROM parking_logs pl
+    LEFT JOIN vehicles v ON pl.vehicle_id = v.id
+    WHERE COALESCE(pl.vehicle_id, 0) > 0 ". ($where ? ' AND '.implode(' AND ', $where) : '') ."
+    ORDER BY pl.scanned_at DESC
 ";
 $vehicleResult = $conn->query($vehicleSql);
 
 // Fetch logs for guests (vehicle_id NULL or 0)
 $guestSql = "
-    SELECT owner_name, action, scanned_at
-    FROM parking_logs
-    WHERE COALESCE(vehicle_id, 0) = 0 ". ($where ? ' AND '.implode(' AND ', $where) : '') ."
-    ORDER BY scanned_at DESC
+    SELECT pl.owner_name, pl.action, pl.scanned_at, g.contact_number, g.vehicle_description
+    FROM parking_logs pl
+    LEFT JOIN guests g ON pl.owner_name COLLATE utf8mb4_general_ci = g.owner_name COLLATE utf8mb4_general_ci
+    WHERE COALESCE(pl.vehicle_id, 0) = 0 ". ($where ? ' AND '.implode(' AND ', $where) : '') ."
+    ORDER BY pl.scanned_at DESC
 ";
 $guestResult = $conn->query($guestSql);
 ?>
@@ -62,6 +64,7 @@ $guestResult = $conn->query($guestSql);
             <a href="register.php">Register</a>
             <a href="view_vehicles.php">Registered</a>
             <a href="activity_logs.php" class="active">Activity Logs</a>
+            <a href="guard_scan.php">Guard Scan</a>
             <a href="logout.php">Logout</a>
         </nav>
     </aside>
@@ -107,6 +110,8 @@ $guestResult = $conn->query($guestSql);
                     <tr>
                         <th>#</th>
                         <th>Owner Name</th>
+                        <th>Contact</th>
+                        <th>Description</th>
                         <th>Status</th>
                         <th>Date & Time</th>
                     </tr>
@@ -114,7 +119,7 @@ $guestResult = $conn->query($guestSql);
                 <tbody>
                     <?php if ($vehicleResult->num_rows === 0): ?>
                         <tr>
-                            <td colspan="4">No records found</td>
+                            <td colspan="6">No records found</td>
                         </tr>
                     <?php else: ?>
                         <?php $count = 1; ?>
@@ -122,6 +127,8 @@ $guestResult = $conn->query($guestSql);
                             <tr>
                                 <td><?= $count++ ?></td>
                                 <td><?= htmlspecialchars($row['owner_name']) ?></td>
+                                <td><?= htmlspecialchars($row['contact_number'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($row['vehicle_description'] ?? 'N/A') ?></td>
                                 <td class="<?= $row['action'] === 'IN' ? 'in' : 'out' ?>">
                                     <?= $row['action'] ?>
                                 </td>
@@ -140,6 +147,8 @@ $guestResult = $conn->query($guestSql);
                     <tr>
                         <th>#</th>
                         <th>Owner Name</th>
+                        <th>Contact</th>
+                        <th>Description</th>
                         <th>Status</th>
                         <th>Date & Time</th>
                     </tr>
@@ -147,7 +156,7 @@ $guestResult = $conn->query($guestSql);
                 <tbody>
                     <?php if ($guestResult->num_rows === 0): ?>
                         <tr>
-                            <td colspan="4">No records found</td>
+                            <td colspan="6">No records found</td>
                         </tr>
                     <?php else: ?>
                         <?php $gcount = 1; ?>
@@ -155,6 +164,8 @@ $guestResult = $conn->query($guestSql);
                             <tr>
                                 <td><?= $gcount++ ?></td>
                                 <td><?= htmlspecialchars($row['owner_name']) ?></td>
+                                <td><?= htmlspecialchars($row['contact_number'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($row['vehicle_description'] ?? 'N/A') ?></td>
                                 <td class="<?= $row['action'] === 'IN' ? 'in' : 'out' ?>">
                                     <?= $row['action'] ?>
                                 </td>

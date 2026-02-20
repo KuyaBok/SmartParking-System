@@ -219,8 +219,15 @@ body {
 }
 .activity-table th:first-child,
 .activity-table td:first-child {
-    text-align: left;
-    width: 45%;
+    text-align: center;
+    /* Wider fixed column to display long numeric ids (up to ~20 digits)
+       Use a monospace font and tabular numbers for stable digit width. */
+    width: 220px;
+    min-width: 220px;
+    max-width: 320px;
+    white-space: nowrap;
+    font-family: Menlo, 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
 }
 .activity-table th:nth-child(3),
 .activity-table td:nth-child(3) {

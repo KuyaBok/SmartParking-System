@@ -63,6 +63,8 @@ if ($tbl && $tbl->num_rows > 0) {
             Back
         </a>
 
+        
+
         <!-- Search & Filter Bar -->
         <div class="search-bar-container">
             <form method="GET" action="view_vehicles.php" class="search-bar-form">

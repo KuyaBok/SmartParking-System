@@ -43,8 +43,6 @@ if (isset($_GET['id'])) {
 
     $owner_email = $hasEmail ? ($vehicle['owner_email'] ?? '') : '';
 
-    // Allow forcing regeneration via ?regenerate=1
-    $forceRegenerate = isset($_GET['regenerate']) && $_GET['regenerate'] == '1';
 
     // Build base URL for link display (use config or auto-detect)
     if (!empty($app_url)) {
@@ -54,7 +52,7 @@ if (isset($_GET['id'])) {
         $baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
     }
 
-    if (!empty($vehicle['qr_token']) && !$forceRegenerate) {
+    if (!empty($vehicle['qr_token'])) {
         // already generated - use existing image
         $file = $vehicle['qr_image'];
         $already = true;
@@ -62,8 +60,10 @@ if (isset($_GET['id'])) {
         $ownerName = strtolower($vehicle['owner_name']);
         $ownerName = preg_replace('/[^a-z0-9]+/', '_', $ownerName);
         $ownerName = trim($ownerName, '_');
-        $token = bin2hex(random_bytes(8));
-        $qrData = $baseUrl . "/scan.php?token=" . $token;
+        // signature payload: prefix with V for vehicle
+        $sig = hash_hmac('sha256', (string)$vehicle_id, $qr_secret);
+        $token = $sig; // store signature as qr_token for record
+        $qrData = 'V' . $vehicle_id . ':' . $sig;
         $folder = "qrcodes/";
         if (!is_dir($folder)) {
             mkdir($folder, 0755, true);
@@ -114,16 +114,10 @@ if (isset($_GET['id'])) {
         $ownerName = strtolower($guest['owner_name']);
         $ownerName = preg_replace('/[^a-z0-9]+/', '_', $ownerName);
         $ownerName = trim($ownerName, '_');
-        $token = bin2hex(random_bytes(8));
-
-        // Build QR link with configurable base URL or auto-detect
-        if (!empty($app_url)) {
-            $baseUrl = rtrim($app_url, '/');
-        } else {
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-        }
-        $qrData = $baseUrl . '/scan.php?token=' . $token;
+        // signature payload: prefix with G for guest
+        $sig = hash_hmac('sha256', 'G' . (string)$guest_id, $qr_secret);
+        $token = $sig; // store signature
+        $qrData = 'G' . $guest_id . ':' . $sig;
 
         $folder = "qrcodes/";
         if (!is_dir($folder)) {
@@ -171,21 +165,10 @@ if (isset($_GET['id'])) {
         <a href="view_vehicles.php" class="btn small secondary">Back to Vehicles</a>
 
         <?php
-            // Show a direct scan link for debugging/testing
+            // owner name for emails
             $ownerName = $vehicle['owner_name'] ?? $guest['owner_name'] ?? 'Owner';
-            $currentToken = $token ?? ($vehicle['qr_token'] ?? ($guest['qr_token'] ?? ''));
-
-            if (!empty($app_url)) {
-                $baseUrl = rtrim($app_url, '/');
-            } elseif (!isset($baseUrl)) {
-                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                $baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-            }
-
-            $qrLink = $baseUrl . '/scan.php?token=' . $currentToken;
         ?>
-        <div class="qr-link">QR URL: <a href="<?= htmlspecialchars($qrLink); ?>" target="_blank"><?= htmlspecialchars($qrLink); ?></a></div>
-        <a href="?<?= isset($_GET['id']) ? 'id=' . intval($_GET['id']) . '&regenerate=1' : 'guest_id=' . intval($_GET['guest_id']) . '&regenerate=1' ?>" class="btn small">Regenerate QR</a>
+        <!-- Regenerate removed: QR is managed from Registered view -->
 
         <?php if (!empty($owner_email)): ?>
             <form method="post" class="send-form">

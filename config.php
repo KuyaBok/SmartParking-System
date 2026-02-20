@@ -7,6 +7,9 @@ $database = "users_db";
 
 $app_url = 'http://localhost/SmartPark';
 
+// Secret used to sign/verify QR payloads. Replace with a strong random string.
+$qr_secret = 'REPLACE_WITH_A_RANDOM_SECRET';
+
 
 $smtp_host = '';
 $smtp_port = 587; 

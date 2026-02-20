@@ -49,6 +49,7 @@ foreach ($images as $img) {
     <title>Gallery - <?= htmlspecialchars($vehicle['owner_name']) ?></title>
     <link rel="stylesheet" href="assets/css/image_gallery.css">
     <link rel="stylesheet" href="assets/css/view_vehicles.css">
+    <!-- site theme reverted -->
     <script src="assets/js/reload_on_nav.js"></script>
 </head>
 <body>

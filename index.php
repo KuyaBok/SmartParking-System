@@ -24,7 +24,8 @@ function isActive($formName, $activeForm){
     <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="Login Css.css">    <script src="assets/js/reload_on_nav.js"></script></head>
+    <link rel="stylesheet" href="Login Css.css">
+    <script src="assets/js/reload_on_nav.js"></script></head>
 <body>
     <div class="login-container">
         <div class="form-box <?= isActive('login', $activeForm); ?>" id="login-form">

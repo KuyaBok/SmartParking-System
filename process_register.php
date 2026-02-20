@@ -30,27 +30,68 @@ if (isset($_POST['register_vehicle'])) {
         exit();
     }
 
-    $checkStmt = $conn->prepare("
-        SELECT id FROM vehicles
-        WHERE vehicle_number = ?
-           OR owner_name = ?
-           OR owner_id = ?
-           OR contact_number = ?
-           OR owner_email = ?
-    ");
-    $checkStmt->bind_param(
-        "sssss",
-        $vehicle_number,
-        $owner_name,
-        $owner_id,
-        $contact_number,
-        $owner_email
-    );
-    $checkStmt->execute();
-    $result = $checkStmt->get_result();
+    // Collect all duplicate field errors
+    $duplicates = [];
 
-    if ($result->num_rows > 0) {
-        $_SESSION['error'] = "Registration denied. One or more details are already registered.";
+    // Check vehicle number
+    if (!empty($vehicle_number)) {
+        $stmt = $conn->prepare("SELECT id FROM vehicles WHERE vehicle_number = ?");
+        $stmt->bind_param("s", $vehicle_number);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows > 0) {
+            $duplicates[] = "Plate number";
+        }
+        $stmt->close();
+    }
+
+    // Check owner name
+    if (!empty($owner_name)) {
+        $stmt = $conn->prepare("SELECT id FROM vehicles WHERE owner_name = ?");
+        $stmt->bind_param("s", $owner_name);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows > 0) {
+            $duplicates[] = "Name";
+        }
+        $stmt->close();
+    }
+
+    // Check owner ID
+    if (!empty($owner_id)) {
+        $stmt = $conn->prepare("SELECT id FROM vehicles WHERE owner_id = ?");
+        $stmt->bind_param("s", $owner_id);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows > 0) {
+            $duplicates[] = "Owner ID";
+        }
+        $stmt->close();
+    }
+
+    // Check contact number
+    if (!empty($contact_number)) {
+        $stmt = $conn->prepare("SELECT id FROM vehicles WHERE contact_number = ?");
+        $stmt->bind_param("s", $contact_number);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows > 0) {
+            $duplicates[] = "Contact number";
+        }
+        $stmt->close();
+    }
+
+    // Check owner email
+    if (!empty($owner_email)) {
+        $stmt = $conn->prepare("SELECT id FROM vehicles WHERE owner_email = ?");
+        $stmt->bind_param("s", $owner_email);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows > 0) {
+            $duplicates[] = "Email";
+        }
+        $stmt->close();
+    }
+
+    // If any duplicates found, show comprehensive error
+    if (!empty($duplicates)) {
+        $bulletList = "<br>" . implode("<br>", array_map(function($item) { return "• " . $item; }, $duplicates));
+        $_SESSION['error'] = "Registration denied. The following are already registered:" . $bulletList;
         header("Location: register.php");
         exit();
     }

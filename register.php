@@ -34,7 +34,7 @@ if (isset($_SESSION['error'])) { $errorMsg = $_SESSION['error']; unset($_SESSION
 
         <?php if ($errorMsg): ?>
             <div class="error-message">
-                <?= htmlspecialchars($errorMsg) ?>
+                <?= $errorMsg ?>
             </div>
         <?php endif; ?>
 
